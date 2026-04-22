@@ -26,14 +26,15 @@ export default function Courses() {
   async function fetchCourses() {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*')
-        .eq('status', 'published') // Assuming 'published' is the status for active courses
-        .order('created_at', { ascending: false });
+      // Use the API endpoint instead of direct Supabase query
+      const response = await fetch('/api/courses');
+      const result = await response.json();
 
-      if (error) throw error;
-      setCourses(data || []);
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to fetch courses');
+      }
+      
+      setCourses(result.data || []);
     } catch (err: any) {
       console.error('Error fetching courses:', err);
       setError('Failed to load courses. Please try again later.');
